@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Passe Composé Exercises</title>
+		<style>
+			body {
+				margin: 0;
+				background-color: #485273;
+				font-family: helvetica, sans-serif;
+				transition: 1s;
+				color: white;
+			}
+
+			#main {
+				position: fixed;
+				width: 60%;
+				left: 50%;
+				top: 50%;
+				transform: translate(-50%, -50%);
+				background-color: #272a36;
+				box-shadow: 0px 0px 30px #272a36;
+				border-radius: 10px;
+				animation: fadein 1.5s;
+			}
+
+			@keyframes fadein {
+				from {
+					opacity: 0;
+					transform: translate(-50%, -60%);
+				}
+				to {
+					opacity: 1;
+				}
+			}
+
+			#question {
+				margin: 5%;
+				font-size: 3em;
+				color: white;
+			}
+
+			#clue {
+				margin: 5%;
+				color: white;
+			}
+
+			#answerbox {
+				background-color: #353949;
+				border-bottom-left-radius: 10px;
+				border-bottom-right-radius: 10px;
+			}
+
+			#answer {
+				width: 90%;
+				background-color: #353949;
+				color: white;
+				border-left: none;
+				border-right: none;
+				border-top: none;
+				border-bottom: 0.5px solid lightgray;
+				font-size: 2em;
+				margin: 5%;
+				padding: 5px;
+			}
+
+			#answer:focus {
+				outline: none;
+				border-bottom: 2px solid white;
+				transition: 0.1s;
+			}
+
+			#table {
+				width: 100%;
+				text-align: left;
+			}
+
+			#menu {
+				position: fixed;
+				width: 100%;
+				background-color: #272a36;
+				padding-left: 2%;
+				padding-right: 2%;
+				padding-top: 1%;
+				padding-bottom: 1%;
+			}
+
+			#settings {
+				position: fixed;
+				bottom: 0;
+				width: 100%;
+				background-color: #272a36;
+				padding-left: 2%;
+				padding-right: 2%;
+				padding-top: 1%;
+				padding-bottom: 1%;
+			}
+
+			label {
+				margin-right: 5%;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="menu">
+			<h2>Passe Composé Exercises</h2>
+		</div>
+		<div id="main">
+			<h1 id="question">Loading...</h1>
+			<div id="answerbox">
+				<input id="answer" placeholder="Press TAB to give up" />
+			</div>
+		</div>
+		<div id="settings">
+			<input type="checkbox" id="check1" checked />
+			<label for="check1">Regular avoir verbs</label>
+			<input type="checkbox" id="check2" checked />
+			<label for="check2">Irregular avoir verbs</label>
+			<input type="checkbox" id="check3" checked />
+			<label for="check3">Regular être verbs</label>
+			<input type="checkbox" id="check4" checked />
+			<label for="check4">Irregular être verbs</label>
+			<input type="checkbox" id="check5" checked />
+			<label for="check4">Negation</label>
+		</div>
+
+		<script>
+			const regularavoir = [
+				["accomplished", "accomplir", "accompli", false, "accomplish"],
+				["admitted", "admettre", "admis", false, "admit"],
+				["acted", "agir", "agi", false, "act"],
+				["liked", "aimer", "aimé", false, "like"],
+				["learned", "apprendre", "appris", false, "learn"],
+				["waited", "attendre", "attendu", false, "wait"],
+				["drank", "boire", "bu", false, "drink"],
+				["sang", "chanter", "chanté", false, "sing"],
+				["chose", "choisir", "choisi", false, "choose"],
+				["ordered", "commander", "commandé", false, "order"],
+				["began", "commencer", "commencé", false, "begin"],
+				["understood", "comprendre", "compris", false, "understand"],
+				["drove", "conduire", "conduit", false, "drive"],
+				["knew (something)", "connaître", "connu", false, "know (something)"],
+				["built", "construire", "construit", false, "build"],
+				["ran", "courir", "couru", false, "run"],
+				["sewed", "coudre", "cousu", false, "sew"],
+				["covered", "couvrir", "couvert", false, "cover"],
+				["feared", "craindre", "craint", false, "fear"],
+				["believed", "croire", "cru", false, "believe"],
+				["danced", "danser", "dansé", false, "dance"],
+				["discovered", "découvrir", "découvert", false, "discover"],
+				["defended", "défendre", "défendu", false, "defend"],
+				["asked", "demander", "demandé", false, "ask"],
+				["drew", "dessiner", "dessiné", false, "draw"],
+				["disappeared", "disparaître", "disparu", false, "disappear"],
+				["said", "dire", "dit", false, "say"],
+				["gave", "donner", "donné", false, "give"],
+				["had to", "devoir", "dû", false, "have to"],
+				["listened", "écouter", "écouté", false, "listen"],
+				["wrote", "écrire", "écrit", false, "write"],
+				["heard", "entendre", "entendu", false, "hear"],
+				["was/were", "être", "été", false, "be"],
+				["studied", "étudier", "étudié", false, "study"],
+				["had", "avoir", "eu", false, "have"],
+				["did", "faire", "fait", false, "do"],
+				["made", "faire", "fait", false, "make"],
+				["finished", "finir", "fini", false, "finish"],
+				["won", "gagner", "gagné", false, "win"],
+				["grew", "grandir", "grandi", false, "grow"],
+				["lived (in)", "habiter", "habité", false, "live (in)"],
+				["joined", "joindre", "joint", false, "join"],
+				["played", "jouer", "joué", false, "play"],
+				["washed", "laver", "lavé", false, "wash"],
+				["read", "lire", "lu", false, "read"],
+				["ate", "manger", "mangé", false, "eat"],
+				["walked", "marcher", "marché", false, "walk"],
+				["put", "mettre", "mis", false, "put"],
+				["swam", "nager", "nagé", false, "swim"],
+				["cleaned", "nettoyer", "nettoyé", false, "clean"],
+				["obeyed", "obeir", "obéi", false, "obey"],
+				["obtained", "obtenir", "obtenu", false, "obtain"],
+				["offered", "offrir", "offert", false, "offer"],
+				["forgot", "oublier", "oublié", false, "forget"],
+				["opened", "ouvrir", "ouvert", false, "open"],
+				["talked", "parler", "parlé", false, "talk"],
+				["painted", "peindre", "peint", false, "paint"],
+				["lost", "perdre", "perdu", false, "lose"],
+				["allowed", "permettre", "permis", false, "allow"],
+				["took", "prendre", "pris", false, "take"],
+				["promised", "promettre", "promis", false, "promise"],
+				["punished", "punir", "puni", false, "punish"],
+				["was/were able to", "pouvoir", "pu", false, "be able to"],
+				["received", "recevoir", "reçu", false, "receive"],
+				["reflected", "réfléchir", "réfléchi", false, "reflect"],
+				["refused", "refuser", "refusé", false, "refuse"],
+				["watched", "regarder", "regardé", false, "watch"],
+				["put back", "remettre", "remis", false, "put back"],
+				["met", "rencontrer", "rencontré", false, "meet"],
+				["answered", "répondre", "répondu", false, "answer"],
+				["laughed", "rire", "ri", false, "laugh"],
+				["suffered", "souffrir", "souffert", false, "suffer"],
+				["smiled", "sourire", "souri", false, "smile"],
+				["knew", "savoir", "su", false, "know"],
+				["followed", "suivre", "suivi", false, "follow"],
+				["surprised", "surprendre", "surpris", false, "surprise"],
+				["survived", "survivre", "survécu", false, "survive"],
+				["telephoned", "téléphoner", "téléphoné", false, "telephone"],
+				["translated", "traduire", "traduit", false, "translate"],
+				["worked", "travailler", "travaillé", false, "work"],
+				["found", "trouver", "trouvé", false, "find"],
+				["used", "utiliser", "utilisé", false, "use"],
+				["was/were worth", "valoir", "valu", false, "be worth"],
+				["lived", "vivre", "vécu", false, "live"],
+				["sold", "vendre", "vendu", false, "sell"],
+				["visited", "visiter", "visité", false, "visit"],
+				["wanted", "vouloir", "voulu", false, "want"],
+				["travelled", "voyager", "voyagé", false, "travel"],
+				["saw", "voir", "vu", false, "see"],
+			];
+
+			const irregularavoir = [
+				["admitted", "admettre", "admis", false, "admit"],
+				["learned", "apprendre", "appris", false, "learn"],
+				["drank", "boire", "bu", false, "drink"],
+				["understood", "comprendre", "compris", false, "understand"],
+				["drove", "conduire", "conduit", false, "drive"],
+				["knew (something)", "connaître", "connu", false, "know (something)"],
+				["built", "construire", "construit", false, "build"],
+				["ran", "courir", "couru", false, "run"],
+				["sewed", "coudre", "cousu", false, "sew"],
+				["covered", "couvrir", "couvert", false, "cover"],
+				["feared", "craindre", "craint", false, "fear"],
+				["believed", "croire", "cru", false, "believe"],
+				["discovered", "découvrir", "découvert", false, "discover"],
+				["disappeared", "disparaître", "disparu", false, "disappear"],
+				["said", "dire", "dit", false, "say"],
+				["had to", "devoir", "dû", false, "have to"],
+				["wrote", "écrire", "écrit", false, "write"],
+				["was/were", "être", "été", false, "be"],
+				["had", "avoir", "eu", false, "have"],
+				["did", "faire", "fait", false, "do"],
+				["made", "faire", "fait", false, "make"],
+				["joined", "joindre", "joint", false, "join"],
+				["read", "lire", "lu", false, "read"],
+				["put", "mettre", "mis", false, "put"],
+				["obtained", "obtenir", "obtenu", false, "obtain"],
+				["offered", "offrir", "offert", false, "offer"],
+				["opened", "ouvrir", "ouvert", false, "open"],
+				["painted", "peindre", "peint", false, "paint"],
+				["lost", "perdre", "perdu", false, "lose"],
+				["allowed", "permettre", "permis", false, "allow"],
+				["took", "prendre", "pris", false, "take"],
+				["promised", "promettre", "promis", false, "promise"],
+				["was/were able to", "pouvoir", "pu", false, "be able to"],
+				["received", "recevoir", "reçu", false, "receive"],
+				["put back", "remettre", "remis", false, "put back"],
+				["laughed", "rire", "ri", false, "laugh"],
+				["suffered", "souffrir", "souffert", false, "suffer"],
+				["smiled", "sourire", "souri", false, "smile"],
+				["knew", "savoir", "su", false, "know"],
+				["followed", "suivre", "suivi", false, "follow"],
+				["surprised", "surprendre", "surpris", false, "surprise"],
+				["survived", "survivre", "survécu", false, "survive"],
+				["fell", "tomber", "tombé", true, "fall"],
+				["translated", "traduire", "traduit", false, "translate"],
+				["was/were worth", "valoir", "valu", false, "be worth"],
+				["lived", "vivre", "vécu", false, "live"],
+				["came", "venir", "venu", true, "come"],
+				["wanted", "vouloir", "voulu", false, "want"],
+				["saw", "voir", "vu", false, "see"],
+			];
+
+			const regularetre = [
+				["went", "aller", "allé", true, "go"],
+				["arrived", "arriver", "arrivé", true, "arrive"],
+				["entered", "entrer", "entré", true, "enter"],
+				["ascended", "monter", "monté", true, "ascend"],
+				["left", "partir", "parti", true, "leave"],
+				["returned (home)", "rentrer", "rentré", true, "return (home)"],
+				["stayed", "rester", "resté", true, "stay"],
+				["returned", "retourner", "retourné", true, "return"],
+				["exited", "sortir", "sorti", true, "exit"],
+				["fell", "tomber", "tombé", true, "fall"],
+			];
+
+			const irregularetre = [
+				["went", "aller", "allé", true, "go"],
+				["arrived", "arriver", "arrivé", true, "arrive"],
+				["descended", "descendre", "descendu", true, "descend"],
+				["became", "devenir", "devenu", true, "become"],
+				["disappeared", "disparaître", "disparu", false, "disappear"],
+				["entered", "entrer", "entré", true, "enter"],
+				["ascended", "monter", "monté", true, "ascend"],
+				["died", "mourir", "mort", true, "die"],
+				["was/were born", "naître", "né", true, "be born"],
+				["left", "partir", "parti", true, "leave"],
+				["returned", "retourner", "retourné", true, "return"],
+				["came back", "revenir", "revenu", true, "come back"],
+				["exited", "sortir", "sorti", true, "exit"],
+				["fell", "tomber", "tombé", true, "fall"],
+				["came", "venir", "venu", true, "come"],
+			];
+
+			document
+				.getElementById("check1")
+				.addEventListener("click", changesettings, false);
+			document
+				.getElementById("check2")
+				.addEventListener("click", changesettings, false);
+			document
+				.getElementById("check3")
+				.addEventListener("click", changesettings, false);
+			document
+				.getElementById("check4")
+				.addEventListener("click", changesettings, false);
+			document
+				.getElementById("check5")
+				.addEventListener("click", changesettings, false);
+
+			function changesettings(event) {
+				if (
+					[
+						document.getElementById("check1").checked,
+						document.getElementById("check2").checked,
+						document.getElementById("check3").checked,
+						document.getElementById("check4").checked,
+					].filter((x) => x == true).length == 0
+				) {
+					alert("You must select at least 1 checkbox!");
+					event.preventDefault();
+				} else {
+					newquestion();
+				}
+			}
+
+			function newquestion() {
+				document.getElementById("answer").value = "";
+				document.getElementById("answer").placeholder = "Press TAB to give up";
+
+				l = [];
+				if (document.getElementById("check1").checked) {
+					l = l.concat(regularavoir);
+				}
+				if (document.getElementById("check2").checked) {
+					l = l.concat(irregularavoir);
+				}
+				if (document.getElementById("check3").checked) {
+					l = l.concat(regularetre);
+				}
+				if (document.getElementById("check4").checked) {
+					l = l.concat(irregularetre);
+				}
+				var verb = l[Math.floor(Math.random() * l.length)];
+				console.log(verb);
+
+				var pronoun;
+				var feminine = false;
+				var plural = false;
+
+				switch (Math.floor(Math.random() * 9)) {
+					case 0:
+						pronoun = "Je";
+						break;
+					case 1:
+						pronoun = "Tu";
+						break;
+					case 2:
+						pronoun = "Il";
+						break;
+					case 3:
+						feminine = true;
+						pronoun = "Elle";
+						break;
+					case 4:
+						pronoun = "On";
+					case 5:
+						plural = true;
+						pronoun = "Nous";
+					case 6:
+						plural = true;
+						pronoun = "Vous";
+						break;
+					case 7:
+						plural = true;
+						pronoun = "Ils";
+						break;
+					default:
+						feminine = true;
+						plural = true;
+						pronoun = "Elles";
+				}
+
+				var answer = "";
+
+				if (Math.floor(Math.random() * 2) == 0) {
+					// no negation
+					document.getElementById("question").innerHTML =
+						pronoun + " (" + verb[1] + ")";
+
+					if (verb[3] || document.getElementById("check5").checked == false) {
+						// etre verb
+						switch (pronoun) {
+							case "Je":
+								answer += "Je suis ";
+								break;
+							case "Tu":
+								answer += "Tu es ";
+								break;
+							case "Il":
+								answer += "Il est ";
+								break;
+							case "Elle":
+								answer += "Elle est ";
+								break;
+							case "On":
+								answer += "On est ";
+								break;
+							case "Nous":
+								answer += "Nous sommes ";
+								break;
+							case "Vous":
+								answer += "Vous êtes ";
+								break;
+							case "Ils":
+								answer += "Ils sont ";
+								break;
+							default:
+								answer += "Elles sont ";
+						}
+
+						if (feminine) {
+							answer += "e";
+						}
+
+						if (plural) {
+							answer += "s";
+						}
+					} else {
+						// avoir verb
+						switch (pronoun) {
+							case "Je":
+								answer += "J'ai ";
+								break;
+							case "Tu":
+								answer += "Tu as ";
+								break;
+							case "Il":
+								answer += "Il a ";
+								break;
+							case "Elle":
+								answer += "Elle a ";
+								break;
+							case "On":
+								answer += "On a ";
+								break;
+							case "Nous":
+								answer += "Nous avons ";
+								break;
+							case "Vous":
+								answer += "Vous avez ";
+								break;
+							case "Ils":
+								answer += "Ils ont ";
+								break;
+							default:
+								answer += "Elles ont ";
+						}
+					}
+				} else {
+					// negation
+					document.getElementById("question").innerHTML =
+						pronoun + " (ne pas " + verb[1] + ")";
+
+					if (verb[3]) {
+						// etre verb
+						switch (pronoun) {
+							case "Je":
+								answer += "Je ne suis pas ";
+								break;
+							case "Tu":
+								answer += "Tu n'es pas ";
+								break;
+							case "Il":
+								answer += "Il n'est pas ";
+								break;
+							case "Elle":
+								answer += "Elle n'est pas ";
+								break;
+							case "On":
+								answer += "On n'est pas ";
+								break;
+							case "Nous":
+								answer += "Nous ne sommes pas ";
+								break;
+							case "Vous":
+								answer += "Vous n'êtes pas ";
+								break;
+							case "Ils":
+								answer += "Ils ne sont pas ";
+								break;
+							default:
+								answer += "Elles ne sont pas ";
+						}
+
+						if (feminine) {
+							answer += "e";
+						}
+
+						if (plural) {
+							answer += "s";
+						}
+					} else {
+						// avoir verb
+						switch (pronoun) {
+							case "Je":
+								answer += "Je n'ai pas ";
+								break;
+							case "Tu":
+								answer += "Tu n'as pas ";
+								break;
+							case "Il":
+								answer += "Il n'a pas ";
+								break;
+							case "Elle":
+								answer += "Elle n'a pas ";
+								break;
+							case "On":
+								answer += "On n'a pas ";
+								break;
+							case "Nous":
+								answer += "Nous n'avons pas ";
+								break;
+							case "Vous":
+								answer += "Vous n'avez pas ";
+								break;
+							case "Ils":
+								answer += "Ils n'ont pas ";
+								break;
+							default:
+								answer += "Elles n'ont pas ";
+						}
+					}
+				}
+
+				answer += verb[2];
+
+				sessionStorage.answer = answer;
+			}
+
+			document.onkeydown = function (e) {
+				document.getElementById("answer").style.color = "white";
+				if (e.keyCode == 13) {
+					// check answer
+					if (
+						document.getElementById("answer").value == sessionStorage.answer
+					) {
+						document.getElementById("answer").style.color = "lightgreen";
+						document.getElementById("answer").readOnly = true;
+
+						setTimeout(function () {
+							document.getElementById("answer").style.color = "white";
+							document.getElementById("answer").readOnly = false;
+							newquestion();
+						}, 1000);
+					} else {
+						document.getElementById("answer").style.color = "pink";
+					}
+				} else if (e.keyCode == 9) {
+					// give up
+					e.preventDefault();
+					document.getElementById("answer").value = "";
+					document.getElementById("answer").placeholder = sessionStorage.answer;
+				}
+			};
+
+			newquestion();
+		</script>
+	</body>
+</html>
