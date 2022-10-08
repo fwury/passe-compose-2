@@ -121,6 +121,8 @@
 			<label for="check4">Irregular être verbs</label>
 			<input type="checkbox" id="check5" checked />
 			<label for="check4">Negation</label>
+			<input type="checkbox" id="check6" checked />
+			<label for="check4">TTS</label>
 		</div>
 
 		<script>
@@ -554,6 +556,10 @@
 					) {
 						document.getElementById("answer").style.color = "lightgreen";
 						document.getElementById("answer").readOnly = true;
+						
+						var msg = new SpeechSynthesisUtterance();
+						msg.text = sessionStorage.answer;
+						window.speechSynthesis.speak(msg);
 
 						setTimeout(function () {
 							document.getElementById("answer").style.color = "white";
@@ -568,6 +574,10 @@
 					e.preventDefault();
 					document.getElementById("answer").value = "";
 					document.getElementById("answer").placeholder = sessionStorage.answer;
+					
+					var msg = new SpeechSynthesisUtterance();
+					msg.text = sessionStorage.answer;
+					window.speechSynthesis.speak(msg);
 				}
 			};
 
