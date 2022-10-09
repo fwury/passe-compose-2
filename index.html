@@ -96,7 +96,7 @@
 			}
 
 			label {
-				margin-right: 5%;
+				margin-right: 2%;
 			}
 		</style>
 	</head>
@@ -120,9 +120,10 @@
 			<input type="checkbox" id="check4" checked />
 			<label for="check4">Irregular être verbs</label>
 			<input type="checkbox" id="check5" checked />
-			<label for="check4">Negation</label>
-			<input type="checkbox" id="check6" checked />
-			<label for="check4">TTS</label>
+			<label for="check5">Negation</label>
+			<input type="checkbox" id="check6" checked onclick="updaterange()" />
+			<label for="check6" style="margin-right: 0.5%">TTS</label>
+			<input type="range" min="0.1" max="1" step="0.1" value="0.8" class="slider" id="rate">
 		</div>
 
 		<script>
@@ -427,14 +428,6 @@
 							default:
 								answer += "Elles sont ";
 						}
-
-						if (feminine) {
-							answer += "e";
-						}
-
-						if (plural) {
-							answer += "s";
-						}
 					} else {
 						// avoir verb
 						switch (pronoun) {
@@ -501,14 +494,6 @@
 							default:
 								answer += "Elles ne sont pas ";
 						}
-
-						if (feminine) {
-							answer += "e";
-						}
-
-						if (plural) {
-							answer += "s";
-						}
 					} else {
 						// avoir verb
 						switch (pronoun) {
@@ -544,6 +529,16 @@
 
 				answer += verb[2];
 
+				if (verb[3]) {
+					if (feminine) {
+						answer += "e";
+					}
+
+					if (plural) {
+						answer += "s";
+					}
+				}
+
 				sessionStorage.answer = answer;
 			}
 
@@ -557,9 +552,14 @@
 						document.getElementById("answer").style.color = "lightgreen";
 						document.getElementById("answer").readOnly = true;
 						
-						var msg = new SpeechSynthesisUtterance();
-						msg.text = sessionStorage.answer;
-						window.speechSynthesis.speak(msg);
+						if (document.getElementById("check6").checked) {
+							var msg = new SpeechSynthesisUtterance();
+							msg.text = sessionStorage.answer;
+							var voices = window.speechSynthesis.getVoices();
+							msg.voice = voices[3];
+							msg.rate = document.getElementById("rate").value;
+							window.speechSynthesis.speak(msg);
+						}
 
 						setTimeout(function () {
 							document.getElementById("answer").style.color = "white";
@@ -574,14 +574,21 @@
 					e.preventDefault();
 					document.getElementById("answer").value = "";
 					document.getElementById("answer").placeholder = sessionStorage.answer;
-					
-					var msg = new SpeechSynthesisUtterance();
-					msg.text = sessionStorage.answer;
-					window.speechSynthesis.speak(msg);
 				}
 			};
 
-			newquestion();
+			function updaterange() {
+				if (document.getElementById("check6").checked) {
+					document.getElementById("rate").style.display = "inline";
+				}
+				else {
+					document.getElementById("rate").style.display = "none";
+				}
+			}
+
+			window.speechSynthesis.onvoiceschanged = function() {
+				newquestion();
+			}
 		</script>
 	</body>
 </html>
